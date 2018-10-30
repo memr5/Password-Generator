@@ -25,13 +25,14 @@ void Password_Generator:: get_password(){
 
     int x;
     int n,lo,u,s;
-
+    int minn=0,mins=0;
+    //MENU
     cout<<"\nChoose one from these two:\n";
     cout<<"Enter 1: Strong Password\n";
     cout<<"Enter 2: Random Password\n";
     cout<<"Enter choice: ";
     cin>>x;
-
+    //WARNING MESSAGE
     if(x==1 && length<8){
         cout<<"\n******WARNING******";
         cout<<"\nLength choosen is for weak password!\nDo you want to change it? (y or n) : ";
@@ -42,13 +43,13 @@ void Password_Generator:: get_password(){
             cin>>length;
         }
     }
-
+    //To Store Newly Created Password
     char pass[length+1];
     pass[length]='\0';
-
-    n=max(length/8,1);
-    s=max(length/8,1);
-    int ud = rand()%2 + 1;
+    //Number of Different types of characters to include in Strong Password according to its Length
+    n=max(length/8,1); //Number of Numbers :)
+    s=max(length/8,1); //Number of Special Characters
+    int ud = rand()%2 + 1; 
     ud*=2;
     int ld;
     if(ud==4){
@@ -57,10 +58,8 @@ void Password_Generator:: get_password(){
     else{
         ld=4;
     }
-    u=length/ud;
-    lo=length/ld;
-
-     //(0 for lower 1 for upper)
+    u=length/ud; //Number of Uppercase Letters
+    lo=length/ld; //Number of Lowercase Letters
 
     string numbers = "1234567890";
     string lower = "qwertyuioplkjhgfdsazxcvbnm";
@@ -70,8 +69,8 @@ void Password_Generator:: get_password(){
     string mix2 = "1@!9#2$8%(?4)7,5&3.60";
 
     if(x==1){
-        set<char> repeated;
-        int last;
+        set<char> repeated; //To keep Track on repeated Characters. If found then change it to randomly anything
+        int last; //To keep track on last type of character
         int first=rand()%4;
         last=first;
         if(first==0){
@@ -84,10 +83,12 @@ void Password_Generator:: get_password(){
         }
         else if(first==2){
             pass[0]=numbers[rand()%10];
+            minn=1;
             --n;
         }
         else{
             pass[0]=special[rand()%11];
+            mins=1;
             --s;
         }
 
@@ -95,7 +96,7 @@ void Password_Generator:: get_password(){
 
         for(int i=1;i<length;i++){
             int next=rand()%3;
-            pair<set<char>::iterator,bool> result;
+            pair<set<char>::iterator,bool> result; //To check if "to be added" character is already in Password or not
             if(lo>0 && last!=0 && next==1){
                 pass[i]=lower[rand()%26];
                 result = repeated.insert(pass[i]);
@@ -113,6 +114,7 @@ void Password_Generator:: get_password(){
                     pass[i]=special[rand()%11];
                     result = repeated.insert(pass[i]);
                 }
+                mins=1;
                 --s;
                 last=3;
             }
@@ -133,6 +135,7 @@ void Password_Generator:: get_password(){
                     pass[i]=upper[rand()%10];
                     result = repeated.insert(pass[i]);
                 }
+                minn=1;
                 --n;
                 last=2;
             }
@@ -162,15 +165,31 @@ void Password_Generator:: get_password(){
                     }
                     if(pass[i]>=48 && pass[i]<=57){
                         --n;
+                        minn=1;
                         last=2;
                     }
                     else{
+                        mins=1;
                         --s;
                         last=3;
                     }
                 }
             }
         }
+        //To Satisfy Minimum Requirements
+        int fin;
+        if(!minn){
+            fin = rand()%length;
+            pass[fin]=numbers[rand()%10];
+        }
+        if(!mins){
+            int i;
+            do{
+                i =rand()%length;
+            }while(i==fin);
+            pass[i]=special[rand()%11];
+        }
+        //Writes Newly Created Passwords to a file for Future Analysis
         ofstream passfile;
         passfile.open("pass.txt",ios::app);
         passfile<<"Strong : "<<pass<<" | Length : "<<length<<" | Day And Time: "<<asctime(ti)<<endl;
