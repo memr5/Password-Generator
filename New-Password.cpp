@@ -60,8 +60,6 @@ void Password_Generator:: get_password(){
     u=length/ud;
     lo=length/ld;
 
-     //(0 for lower 1 for upper)
-
     string numbers = "1234567890";
     string lower = "qwertyuioplkjhgfdsazxcvbnm";
     string upper = "MNBVCXZPOIUYTREWQASDFGHJKL";
